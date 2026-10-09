@@ -36,11 +36,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "createUpdaterArtifacts": false
+    "createUpdaterArtifacts": true
   },
   "plugins": {
     "updater": {
-      "pubkey": "HIER_DEN_OEFFENTLICHEN_SCHLUESSEL_EINTRAGEN",
+      "pubkey": "P8pIjo07j4MC18xT",
       "endpoints": [
         "https://github.com/Olcay91/Bildwerk/releases/latest/download/latest.json"
       ],
