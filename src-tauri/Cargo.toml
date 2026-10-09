@@ -1,0 +1,52 @@
+[package]
+name = "bildwerk"
+version = "0.3.0"
+description = "Bildwerk – schlanker Bildeditor mit Stapelverarbeitung"
+edition = "2021"
+
+[lib]
+name = "bildwerk_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+tauri-plugin-opener = "2"
+percent-encoding = "2"
+serde = { version = "1", features = ["derive"] }
+# wird von tauri::generate_context!() für die Plugin-Konfiguration benötigt
+serde_json = "1"
+# Bildschirm- und Fensteraufnahme (Windows, macOS, Linux)
+xcap = "0.4"
+# Zwischenablage (Bilder) für Windows, macOS, Linux
+arboard = "3"
+# Automatisches Scrollen bei der Bildlauf-Aufnahme
+enigo = "0.2"
+
+# Auch im Entwicklungsmodus (npm run dev) optimiert bauen – die Bildverarbeitung
+# (Screenshot, Bildlauf) wäre sonst um ein Vielfaches langsamer.
+[profile.dev]
+opt-level = 2
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
+
+# Bildverarbeitung auf Geschwindigkeit statt Größe optimieren
+[profile.release.package.bildwerk]
+opt-level = 3
+
+[profile.release.package.image]
+opt-level = 3

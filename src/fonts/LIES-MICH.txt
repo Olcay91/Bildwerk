@@ -1,0 +1,12 @@
+Schrift für die Oberfläche: Office Code Pro (Regular)
+Lizenz: SIL Open Font License 1.1 – https://github.com/nathco/Office-Code-Pro
+
+Bitte aus dem Repository diese Datei hier ablegen (eine genügt):
+  Fonts/Office Code Pro/Web/OfficeCodePro-Regular.woff2   (empfohlen)
+  oder .../OfficeCodePro-Regular.woff  oder  .../OTF/OfficeCodePro-Regular.otf
+
+Dazu die Lizenzdatei (LICENSE.txt) aus dem Repository hier ablegen – die OFL verlangt,
+dass sie mit der Schrift weitergegeben wird.
+
+Fehlt die Datei, nutzt Bildwerk eine installierte Office Code Pro bzw. Source Code Pro
+oder eine andere Festbreitenschrift des Systems.

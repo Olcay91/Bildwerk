@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Rechte für das Hauptfenster",
+  "windows": ["main", "scroll"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-theme",
+    "dialog:default",
+    "updater:default",
+    "process:default",
+    "opener:default",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
+    "global-shortcut:allow-is-registered"
+  ]
+}

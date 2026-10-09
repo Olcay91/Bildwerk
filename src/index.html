@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bildwerk</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app" data-tool="" data-panel="closed" data-collapsed="false">
+
+  <aside class="rail" aria-label="Werkzeuge">
+    <div class="brand"><img class="brand-mark" src="icon.png" alt="" aria-hidden="true" draggable="false"><span class="brand-name">Bildwerk</span>
+      <button class="tool collapse" id="collapse" aria-label="Seitenleiste einklappen" title="Seitenleiste einklappen"><svg class="i" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+    </div>
+    <nav class="tool-nav" id="toolNav" aria-label="Werkzeugleiste"></nav>
+    <div class="rail-foot">
+      <button class="tool" data-act="openSettings" id="settingsBtn" aria-pressed="false" aria-haspopup="dialog" title="Einstellungen"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="lbl">Einstellungen</span></button>
+    </div>
+  </aside>
+
+  <section class="panel" id="panel" aria-live="polite">
+    <!-- Zuschneiden -->
+    <div class="pane" data-pane="crop">
+      <h2>Zuschneiden</h2>
+      <p class="sub">Ziehe die gelben Ecken oder Seiten oder verschiebe den Rahmen im Bild.</p>
+      <div class="group">
+        <span class="gl">Seitenverhältnis</span>
+        <div class="chips" id="ratioChips"></div>
+      </div>
+      <div class="group" id="customRatio" hidden>
+        <div class="row">
+          <label class="field"><span>Breite</span><input class="input" type="number" min="1" step="1" id="customW"></label>
+          <span style="padding-top:18px;color:var(--muted)">:</span>
+          <label class="field"><span>Höhe</span><input class="input" type="number" min="1" step="1" id="customH"></label>
+        </div>
+      </div>
+      <button class="btn block" data-act="resetCrop">Zuschnitt zurücksetzen</button>
+      <p class="note">Bilder ohne eigenen Zuschnitt werden mittig zugeschnitten.</p>
+    </div>
+
+    <!-- Drehen & Spiegeln -->
+    <div class="pane" data-pane="transform">
+      <h2>Drehen &amp; Spiegeln</h2>
+      <p class="sub">Tastenkürzel: R dreht nach rechts, H und V spiegeln.</p>
+      <div class="grid2 group">
+        <button class="btn" data-act="rotL"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>90° links</button>
+        <button class="btn" data-act="rotR"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>90° rechts</button>
+        <button class="btn" data-act="flipH" id="flipHBtn"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M8 7l-5 5 5 5z"/><path d="M16 7l5 5-5 5z"/></svg>Horizontal</button>
+        <button class="btn" data-act="flipV" id="flipVBtn"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h18"/><path d="M7 8l5-5 5 5z"/><path d="M7 16l5 5 5-5z"/></svg>Vertikal</button>
+      </div>
+      <p class="note" id="transformNote"></p>
+      <button class="btn ghost block" data-act="resetTransform" style="margin-top:10px">Drehung zurücksetzen</button>
+    </div>
+
+    <!-- Größe -->
+    <div class="pane" data-pane="resize">
+      <h2>Größe</h2>
+      <p class="sub">Begrenzt die Ausgabe auf eine maximale Auflösung. Kleinere Bilder werden nie hochskaliert.</p>
+      <label class="switch"><span>Größe begrenzen</span><input type="checkbox" id="resizeOn"></label>
+      <fieldset id="resizeFields">
+        <div class="group adv">
+          <div class="row">
+            <label class="field"><span>Max. Breite (px)</span><input class="input" type="number" min="1" id="maxW"></label>
+            <label class="field"><span>Max. Höhe (px)</span><input class="input" type="number" min="1" id="maxH"></label>
+          </div>
+          <p class="note">Feld leer lassen = keine Grenze in dieser Richtung.</p>
+        </div>
+        <div class="group">
+          <span class="gl">Längste Seite</span>
+          <div class="chips" id="sizeChips">
+            <button class="chip" data-size="1080">1080</button>
+            <button class="chip" data-size="1920">1920</button>
+            <button class="chip" data-size="2560">2560</button>
+            <button class="chip" data-size="3840">3840</button>
+            <button class="chip" data-size="800">800</button>
+            <button class="chip" data-size="512">512</button>
+          </div>
+        </div>
+        <label class="switch adv"><span>Seitenverhältnis beibehalten</span><input type="checkbox" id="keepAspect"></label>
+      </fieldset>
+    </div>
+
+    <!-- Export -->
+    <div class="pane" data-pane="export">
+      <h2>Export</h2>
+      <p class="sub">Format und Qualität gelten für das einzelne Bild und den ganzen Stapel.</p>
+      <div class="group">
+        <span class="gl">Format</span>
+        <div class="seg" id="fmtSeg">
+          <button data-fmt="image/jpeg">JPEG</button>
+          <button data-fmt="image/webp">WebP</button>
+          <button data-fmt="image/png">PNG</button>
+        </div>
+      </div>
+      <fieldset class="group" id="qualityGroup">
+        <span class="gl simple-only">Qualität</span>
+        <div class="adv">
+          <div class="slider-head"><span class="gl" style="margin:0">Qualität</span><b id="qVal">85 %</b></div>
+          <input type="range" min="10" max="100" step="1" id="quality" aria-label="Qualität">
+        </div>
+        <div class="chips" style="grid-template-columns:repeat(4,1fr)">
+          <button class="chip" data-q="60">Klein</button>
+          <button class="chip" data-q="80">Mittel</button>
+          <button class="chip" data-q="92">Hoch</button>
+          <button class="chip" data-q="100">Max.</button>
+        </div>
+        <p class="note" id="pngNote" hidden>PNG ist verlustfrei, die Qualität spielt keine Rolle.</p>
+      </fieldset>
+      <div class="group adv">
+        <label class="field"><span>Zusatz für den Dateinamen</span><input class="input" type="text" id="suffix" placeholder="z. B. _web"></label>
+        <p class="note" id="namePreview"></p>
+      </div>
+      <div class="stack">
+        <button class="btn primary block" data-act="exportOne">Dieses Bild exportieren</button>
+        <button class="btn block" data-act="exportAll" id="exportAllBtn">Alle als ZIP exportieren</button>
+      </div>
+    </div>
+
+    <!-- Arbeitsabläufe -->
+    <div class="pane" data-pane="workflows">
+      <h2>Arbeitsabläufe</h2>
+      <p class="sub">Speichert Seitenverhältnis, Drehung, Größe und Export-Einstellungen, um sie später mit einem Klick anzuwenden.</p>
+      <div class="group">
+        <label class="field"><span>Name</span><input class="input" type="text" id="wfName" placeholder="z. B. Instagram quadratisch"></label>
+        <button class="btn primary block" data-act="saveWf" style="margin-top:8px">Ablauf speichern</button>
+      </div>
+      <div id="wfList" class="wf-list"></div>
+      <div class="grid2 adv" style="margin-top:16px">
+        <button class="btn" data-act="exportWf">Exportieren</button>
+        <button class="btn" data-act="importWf">Importieren</button>
+      </div>
+      <p class="note adv">Abläufe werden auf diesem Gerät gespeichert. Mit Exportieren erhältst du eine JSON-Datei zum Sichern oder Teilen.</p>
+    </div>
+    <!-- Werkzeugleiste anpassen -->
+    <div class="pane" data-pane="toolbar">
+      <div class="pane-head">
+        <h2>Werkzeugleiste anpassen</h2>
+        <button class="pane-x" data-act="closeCustomize" aria-label="Anpassen schließen" title="Schließen (Esc)"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <p class="sub">Ziehe Werkzeuge am Griff in die gewünschte Reihenfolge, entferne sie mit Minus oder füge neue mit Plus hinzu. Änderungen werden sofort gespeichert.</p>
+      <div class="group">
+        <span class="gl">In der Leiste</span>
+        <ul class="bar-list" id="barOn"></ul>
+      </div>
+      <div class="group">
+        <span class="gl">Verfügbar</span>
+        <ul class="bar-list" id="barOff"></ul>
+      </div>
+      <div class="stack">
+        <button class="btn primary block" data-act="closeCustomize">Fertig</button>
+        <button class="btn ghost block" data-act="resetBar">Standard wiederherstellen</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="stage">
+    <div class="topbar">
+      <div class="meta">
+        <div class="fn" id="fileName">Kein Bild geöffnet</div>
+        <div class="dims" id="dims">Ziehe Bilder hierher oder wähle sie aus.</div>
+      </div>
+      <div class="adj-list" id="activeAdj" aria-label="Aktive Änderungen"></div>
+      <button class="btn primary" data-act="exportOne" id="topExport" disabled>
+        <svg class="i" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg><span>Exportieren</span>
+      </button>
+    </div>
+    <div class="wrap" id="wrap">
+      <div class="drop" id="drop">
+        <svg class="i" viewBox="0 0 24 24" style="width:40px;height:40px"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 16l3-3 2 2 2-2 3 3"/></svg>
+        <div><strong>Bilder hierher ziehen</strong>JPG, PNG, WebP oder GIF – gern mehrere auf einmal.</div>
+        <button class="btn primary" data-act="pick">Bilder auswählen</button>
+      </div>
+      <canvas id="view" class="view" hidden></canvas>
+      <div class="frame" id="frame" hidden>
+        <div id="cropbox">
+          <span class="h" data-h="nw"></span><span class="h" data-h="ne"></span>
+          <span class="h" data-h="sw"></span><span class="h" data-h="se"></span>
+          <span class="e" data-h="n"></span><span class="e" data-h="s"></span>
+          <span class="e" data-h="w"></span><span class="e" data-h="e"></span>
+        </div>
+      </div>
+      <div class="zoombar" id="zoombar" role="toolbar" aria-label="Zoom" hidden>
+        <button data-zoom="out" title="Verkleinern (−)" aria-label="Verkleinern"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <button class="zv" data-zoom="fit" id="viewZoomVal" title="Einpassen (0)">100 %</button>
+        <button data-zoom="in" title="Vergrößern (+)" aria-label="Vergrößern"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        <span class="zsep"></span>
+        <button class="zt" data-zoom="one" title="Originalgröße 100 % (1)">1:1</button>
+        <button data-zoom="fit" title="Ins Fenster einpassen (0)" aria-label="Einpassen"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/></svg></button>
+      </div>
+    </div>
+    <div class="strip-wrap" id="stripWrap" hidden>
+      <div class="strip" id="strip"></div>
+      <div class="strip-actions">
+        <span class="strip-count" id="stripCount"></span>
+        <button class="btn ghost" data-act="clear" id="clearBtn" title="Alle Bilder aus Bildwerk entfernen"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Alle entfernen</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<input type="file" id="fileIn" accept="image/*" multiple class="sr">
+<input type="file" id="wfIn" accept="application/json,.json" class="sr">
+<div class="toast" id="toast" role="status"></div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="prog" id="prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+  <div class="prog-top">
+    <span class="prog-count" id="progCount">0/0</span>
+    <span class="prog-eta" id="progEta">Restzeit wird berechnet …</span>
+    <button class="prog-x" id="progX" aria-label="Abbrechen" title="Abbrechen"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="prog-row">
+    <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+    <span class="prog-pct" id="progPct">0 %</span>
+  </div>
+</div>
+<!-- Einstellungen als eigenes Fenster -->
+<div class="setwin-back" id="setWin" hidden>
+  <div class="setwin" role="dialog" aria-modal="true" aria-labelledby="setWinTitle">
+    <div class="setwin-head" id="setWinHead">
+      <h2 id="setWinTitle">Einstellungen</h2>
+      <button class="pane-x" data-act="closeSettings" aria-label="Einstellungen schließen" title="Schließen (Esc)"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="tabs" role="tablist" id="setTabs" aria-label="Bereiche der Einstellungen">
+        <button class="tab" role="tab" data-tab="info">Info</button>
+        <button class="tab" role="tab" data-tab="view">Ansicht</button>
+        <button class="tab" role="tab" data-tab="save">Speichern</button>
+        <button class="tab" role="tab" data-tab="shot">Screenshots</button>
+      </div>
+    <div class="setwin-body">
+      <section class="tabpane" data-tab="info" role="tabpanel">
+        <div class="about">
+          <img class="brand-mark big" src="icon.png" alt="" aria-hidden="true" draggable="false">
+          <div>
+            <div class="about-name">Bildwerk</div>
+            <div class="about-ver" id="aboutVer">Version –</div>
+          </div>
+        </div>
+        <p class="about-txt">Schlanker Bildeditor für Windows, macOS, Linux und den Browser: Stapelverarbeitung, Zuschneiden, Größe, Export und Screenshots.</p>
+        <div class="grid2" style="margin-bottom:22px">
+          <button class="btn" data-act="openGithub"><svg class="i" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg>GitHub</button>
+          <button class="btn" data-act="whatsNew">Was ist neu?</button>
+        </div>
+        <h3 class="set-h">Updates</h3>
+        <div class="set-card">
+          <div class="upd-status">
+            <div class="upd-ver" id="updVer">Installiert: Version –</div>
+            <div class="note" id="updStatus" style="margin:2px 0 0">Noch nicht geprüft.</div>
+          </div>
+          <div class="stack" style="margin:12px 0 6px">
+            <button class="btn primary" data-act="installUpdate" id="updInstall" hidden>Update installieren</button>
+            <button class="btn" data-act="checkUpdates" id="updCheck">Jetzt nach Updates suchen</button>
+          </div>
+          <fieldset id="updFields">
+            <label class="switch"><span class="sw-txt">Automatisch nach Updates suchen<small>Beim Start, höchstens alle sechs Stunden.</small></span><input type="checkbox" id="updAuto"></label>
+            <label class="switch adv" style="padding-bottom:0"><span class="sw-txt">Updates im Hintergrund herunterladen<small>Danach genügt ein Neustart zum Installieren.</small></span><input type="checkbox" id="updDownload"></label>
+          </fieldset>
+        </div>
+        <p class="note" id="updNote"></p>
+        <h3 class="set-h" style="margin-top:22px">Tastenkürzel</h3>
+        <div class="set-card keys" id="keyList"></div>
+        <h3 class="set-h">Änderungsprotokoll</h3>
+        <div class="set-card changelog" id="changelog"></div>
+      </section>
+
+      <section class="tabpane" data-tab="view" role="tabpanel">
+        <div class="set-card" style="margin-bottom:18px">
+          <div class="group" style="margin-top:10px">
+            <span class="gl">Sprache</span>
+            <div class="seg" id="langSeg" translate="no">
+              <button data-lang="de">Deutsch</button>
+              <button data-lang="en">English</button>
+            </div>
+          </div>
+          <div class="group" style="margin-bottom:0">
+            <span class="gl">Modus</span>
+            <div class="seg" id="modeSeg">
+              <button data-uimode="simple">Einfach</button>
+              <button data-uimode="advanced">Erweitert</button>
+            </div>
+            <p class="note">Einfach blendet selten genutzte Optionen aus, zum Beispiel Feineinstellungen für Qualität, Dateinamen und Bildlauf.</p>
+          </div>
+        </div>
+      <div class="set-card">
+        <div class="group" style="margin-top:10px">
+          <span class="gl">Erscheinungsbild</span>
+          <div class="seg" id="themeSeg">
+            <button data-theme-opt="system">System</button>
+            <button data-theme-opt="light">Hell</button>
+            <button data-theme-opt="dark">Dunkel</button>
+          </div>
+        </div>
+        <div class="group">
+          <span class="gl">Werkzeuge in der Seitenleiste zeigen als</span>
+          <div class="seg" id="toolStyleSeg">
+            <button data-style="icon">Nur Symbole</button>
+            <button data-style="both">Beides</button>
+            <button data-style="text">Nur Text</button>
+          </div>
+        </div>
+        <div class="group" style="margin-bottom:0">
+          <div class="slider-head"><label class="gl" for="uiZoom" style="margin:0">Symbol- und Textgröße</label><b id="zoomVal">100 %</b></div>
+          <input type="range" id="uiZoom" min="75" max="150" step="5">
+          <p class="note">Doppelklick auf den Regler setzt auf 100 % zurück.</p>
+        </div>
+      </div>
+      </section>
+
+      <section class="tabpane" data-tab="save" role="tabpanel">
+        <h3 class="set-h">Standardordner</h3>
+        <div class="set-card">
+          <div class="path-box" id="saveDir">–</div>
+          <div class="grid2" style="margin:8px 0 6px">
+            <button class="btn" data-act="pickSaveDir">Ändern</button>
+            <button class="btn ghost" data-act="resetSaveDir">Zurücksetzen</button>
+          </div>
+          <label class="switch" style="padding-bottom:4px"><span class="sw-txt">Immer nach dem Speicherort fragen<small>Aus: Exporte landen ohne Nachfrage direkt im Standardordner.</small></span><input type="checkbox" id="saveAsk"></label>
+          <p class="note" id="saveDirNote"></p>
+        </div>
+        <h3 class="set-h">Dateiformat</h3>
+        <div class="set-card">
+          <div class="group" style="margin-top:10px">
+            <div class="seg" id="setFmtSeg">
+              <button data-fmt="image/jpeg">JPEG</button>
+              <button data-fmt="image/webp">WebP</button>
+              <button data-fmt="image/png">PNG</button>
+            </div>
+          </div>
+          <fieldset class="group adv" id="setQualityGroup" style="margin-bottom:0">
+            <div class="slider-head"><label class="gl" for="setQuality" style="margin:0">Qualität</label><b id="setQVal">85 %</b></div>
+            <input type="range" min="10" max="100" step="1" id="setQuality">
+            <p class="note">Gilt auch im Bereich „Export“ und wird in Arbeitsabläufen mitgespeichert.</p>
+          </fieldset>
+        </div>
+      </section>
+
+      <section class="tabpane" data-tab="shot" role="tabpanel">
+      <div class="set-card">
+        <label class="switch"><span class="sw-txt"><b>Screenshot-Funktion</b><small>Bildschirmaufnahmen direkt in Bildwerk öffnen und bearbeiten.</small></span><input type="checkbox" id="shotOn"></label>
+        <fieldset id="shotFields">
+          <div class="group">
+            <span class="gl">Tastenkürzel zum Auslösen</span>
+            <button class="kbd-field" id="shotKey" aria-label="Tastenkürzel ändern"></button>
+            <div class="kbd-actions">
+              <span class="note" style="margin:0">Zum Ändern anklicken</span>
+              <button class="btn ghost" id="clearShotKey" data-act="clearShotKey">Entfernen</button>
+            </div>
+            <p class="note" id="shotKeyNote"></p>
+          </div>
+          <div class="group">
+            <span class="gl">Dateiformat für Screenshots</span>
+            <div class="seg" id="shotFmtSeg">
+              <button data-fmt="image/png">PNG</button>
+              <button data-fmt="image/jpeg">JPEG</button>
+              <button data-fmt="image/webp">WebP</button>
+            </div>
+          </div>
+          <fieldset class="group adv" id="shotQualityGroup">
+            <div class="slider-head"><label class="gl" for="shotQuality" style="margin:0">Qualität</label><b id="shotQVal">90 %</b></div>
+            <input type="range" min="10" max="100" step="1" id="shotQuality">
+            <p class="note" id="shotFmtNote">PNG ist verlustfrei und ideal für Texte und Bildschirminhalte.</p>
+          </fieldset>
+          <label class="switch adv" style="padding:0 0 10px" id="shotAutoSaveRow"><span class="sw-txt">Automatisch im Standardordner speichern<small>Jeder Screenshot wird zusätzlich als Datei gespeichert (Ordner unter „Speichern“).</small></span><input type="checkbox" id="shotAutoSave"></label>
+          <label class="switch" style="padding:0 0 14px"><span class="sw-txt">In die Zwischenablage kopieren<small>Jeder Screenshot wird zusätzlich automatisch kopiert.</small></span><input type="checkbox" id="shotClip"></label>
+          <div class="group">
+            <span class="gl">Startmodus</span>
+            <div class="seg" id="shotModeSeg">
+              <button data-mode="region">Bereich</button>
+              <button data-mode="window">Fenster</button>
+              <button data-mode="full">Vollbild</button>
+              <button data-mode="scroll" id="modeScrollOpt">Bildlauf</button>
+            </div>
+            <p class="note">Während der Aufnahme kannst du den Modus jederzeit wechseln.</p>
+          </div>
+          <div id="scrollOpts">
+            <label class="switch" style="padding:0 0 12px"><span class="sw-txt">Bildlauf: automatisch scrollen<small>Startet sofort nach der Auswahl. Aus: Du scrollst selbst und kannst die Automatik in der Steuerleiste einschalten.</small></span><input type="checkbox" id="scrollAuto"></label>
+            <div class="group adv">
+              <span class="gl">Bildlauf: maximale Länge</span>
+              <div class="seg" id="scrollMaxSeg">
+                <button data-max="10000">10.000 px</button>
+                <button data-max="20000">20.000 px</button>
+                <button data-max="30000">30.000 px</button>
+              </div>
+            </div>
+            <div class="group adv">
+              <span class="gl">Bildlauf: auf Nachladen warten</span>
+              <div class="seg" id="scrollWaitSeg">
+                <button data-wait="2000">2 s</button>
+                <button data-wait="5000">5 s</button>
+                <button data-wait="10000">10 s</button>
+              </div>
+              <p class="note">Seiten mit endlosem Scrollen laden unten neue Inhalte nach. So lange wartet das automatische Scrollen, bevor es das Ende annimmt. Bei Endlos-Seiten stoppt die Aufnahme spätestens bei der maximalen Länge.</p>
+            </div>
+          </div>
+          <button class="btn block" data-act="screenshot">Screenshot aufnehmen</button>
+        </fieldset>
+      </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+<div class="modal-back" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h2 id="modalTitle"></h2>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-act" id="modalAct"></div>
+  </div>
+</div>
+<div class="shot" id="shot" data-mode="region" hidden>
+  <div class="shot-dim" id="shotDim"></div>
+  <div class="shot-sel" id="shotSel" hidden><span class="shot-size" id="shotSize"></span></div>
+  <div class="shot-bar" role="toolbar" aria-label="Screenshot">
+    <div class="shot-modes">
+      <button data-shot-mode="region" title="Bereich (1)"><svg class="i" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg><span>Bereich</span></button>
+      <button data-shot-mode="window" id="shotWinBtn" title="Fenster (2)"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg><span>Fenster</span></button>
+      <button data-shot-mode="scroll" id="shotScrollBtn" title="Bildlauf (4)"><svg class="i" viewBox="0 0 24 24"><path d="M6 4h12"/><path d="M6 20h12"/><rect x="8" y="7" width="8" height="10" rx="1"/><path d="M12 9v6M10 13l2 2 2-2"/></svg><span>Bildlauf</span></button>
+      <button data-shot-mode="full" title="Vollbild (3)"><svg class="i" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Vollbild</span></button>
+    </div>
+    <span class="shot-hint" id="shotHint"></span>
+    <button class="shot-x" data-shot="cancel" aria-label="Screenshot abbrechen"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+</div>
+<div class="ctx" id="ctxMenu" role="menu" aria-label="Werkzeugleiste" hidden>
+  <button role="menuitem" data-ctx="customize"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>Anpassen</button>
+</div>
+<div class="coach" id="coach" role="dialog" aria-labelledby="coachTitle" aria-describedby="coachText" hidden>
+  <span class="coach-arrow" aria-hidden="true"></span>
+  <button class="coach-x" data-coach="close" aria-label="Hinweis schließen"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <strong id="coachTitle">Deine Werkzeugleiste</strong>
+  <p id="coachText">Rechtsklick auf die Werkzeuge, um Werkzeuge hinzuzufügen, zu entfernen und umzusortieren.</p>
+  <button class="coach-ok" data-coach="ok">Verstanden</button>
+</div>
+
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
