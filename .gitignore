@@ -1,0 +1,11 @@
+# Abhängigkeiten und Build-Ergebnisse
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Signaturschlüssel – niemals hochladen
+*.key
